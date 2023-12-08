@@ -15,6 +15,7 @@ int getPower(int counter[13]);
 int bubbleSort(struct node **head, int count);
 int calculateResult(node *list);
 struct node *swap(struct node *ptr1, struct node *ptr2);
+void useJoker(int counter[]);
 
 enum power { card, pair, twopair, three, fullhouse, four, five };
 
@@ -35,12 +36,12 @@ int main() {
   }
   head = head->next;  // remove empty head
 
-  //   printf("\n");
+  printf("\n");
 
-  //   printList(head);
-  //   printf("----------\n");
+  printList(head);
+  printf("----------\n");
   bubbleSort(&head, lineCount);
-  //   printList(head);
+  printList(head);
   int result = calculateResult(head);
   printf("Result: %d", result);
   fclose(fh);
@@ -66,14 +67,17 @@ void appendNode(node *list, char *text) {
 int compareHandPower(char *handOne, char *handTwo) {
   int counterOne[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int counterTwo[13] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  char one[15] = "22222";
-  char two[15] = "22222";
+  char one[15] = "";
+  char two[15] = "";
   strcpy(one, handOne);
   strcpy(two, handTwo);
   for (size_t i = 0; i < 5; i++) {
     counterOne[getIndex(one[i])] += 1;
     counterTwo[getIndex(two[i])] += 1;
   }
+  useJoker(counterOne);
+  useJoker(counterTwo);
+
   int powerOne = getPower(counterOne);
   int powerTwo = getPower(counterTwo);
 
@@ -116,25 +120,25 @@ int getIndex(int c) {
       return 11;
     case 'Q':
       return 10;
-    case 'J':
-      return 9;
     case 'T':
-      return 8;
+      return 9;
     case '9':
-      return 7;
+      return 8;
     case '8':
-      return 6;
+      return 7;
     case '7':
-      return 5;
+      return 6;
     case '6':
-      return 4;
+      return 5;
     case '5':
-      return 3;
+      return 4;
     case '4':
-      return 2;
+      return 3;
     case '3':
-      return 1;
+      return 2;
     case '2':
+      return 1;
+    case 'J':
       return 0;
     default:
       printf("This should not happen! Char: %c\n", c);
@@ -211,8 +215,8 @@ int calculateResult(node *list) {
   while (current != NULL) {
     char *value = (char *)(current->text + 6);
     long intValue = atoi(value);
-    printf("Rank: %d, Result: %d, IntValue: %d, Line:%s", rank, result,
-           intValue, current->text);
+    // printf("Rank: %d, Result: %d, IntValue: %d, Line:%s", rank, result,
+    //        intValue, current->text);
     result += rank * intValue;
     current = current->next;
     rank++;
@@ -220,4 +224,21 @@ int calculateResult(node *list) {
   printf("\n");
 
   return result;
+}
+
+void useJoker(int counter[]) {
+  int jokers = counter[0];
+  int counterLength = 13;
+  int currentMax = 0;
+  int indexMax = 0;
+  for (size_t i = 1; i < counterLength; i++) {
+    if (counter[i] > currentMax) {
+      currentMax = counter[i];
+      indexMax = i;
+    }
+  }
+  if (jokers != 5) {
+    counter[indexMax] += jokers;
+    counter[0] = 0;
+  }
 }
