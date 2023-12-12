@@ -18,7 +18,8 @@ void printList(node *list);
 nodeInt *splitLine(char *line);
 void printListInt(nodeInt *list);
 int listLength(struct nodeInt *list);
-long long *calculateDiff(long long *history, int length, long long *nextNum);
+long long *calculateDiff(long long *history, int length,
+                         struct nodeInt *firstNumbers);
 long long parseLine(char *line);
 int checkForValues(long long *array, int length);
 void appendNodeInt(struct nodeInt *list, long long value);
@@ -26,8 +27,6 @@ void appendNodeInt(struct nodeInt *list, long long value);
 int main() {
   FILE *fh;
   fh = fopen("puzzle.txt", "r");
-  printf("\n%d", sizeof(int));
-  printf("\n%ld", sizeof(long long));
 
   node *head = NULL;
   head = malloc(sizeof(node));
@@ -109,6 +108,7 @@ long long parseLine(char *line) {
   int length = listLength(lineAsNumbers);
   long long *lineArray = malloc(sizeof(long long) * length);
 
+  long long finalResult = current->value;
   int i = 0;
   while (current->next != NULL) {
     lineArray[i] = current->value;
@@ -116,24 +116,37 @@ long long parseLine(char *line) {
     current = current->next;
   }
   lineArray[i] = current->value;
-  long long lastNumber = current->value;
 
-  long long *result = calculateDiff(lineArray, length, &lastNumber);
+  nodeInt *firstNumbers = malloc(sizeof(nodeInt));
+  firstNumbers->next = NULL;
+  firstNumbers->value = 0;
+  long long *result = calculateDiff(lineArray, length, firstNumbers);
   int j = 1;
   while (checkForValues(result, length - j)) {
-    result = calculateDiff(result, length - j, &lastNumber);
+    result = calculateDiff(result, length - j, firstNumbers);
     j++;
   }
-  printf("Line Result: %d\n", lastNumber);
-  return lastNumber;
+  firstNumbers = firstNumbers->next;
+  int lengthNumbers = listLength(firstNumbers);
+  nodeInt *currentNew = firstNumbers;
+  i = 1;
+  while (currentNew->next != NULL) {
+    finalResult += currentNew->value * (1 - 2 * (i % 2));
+    currentNew = currentNew->next;
+    i++;
+  }
+  // printListInt(firstNumbers);
+  printf("Line Result: %d\n", finalResult);
+  return finalResult;
 }
 
-long long *calculateDiff(long long *history, int length, long long *nextNum) {
+long long *calculateDiff(long long *history, int length,
+                         struct nodeInt *firstNumbers) {
   long long *result = malloc((length - 1) * sizeof(long long));
   for (size_t i = 0; i < length - 1; i++) {
     result[i] = history[i + 1] - history[i];
   }
-  *nextNum += result[length - 2];
+  appendNodeInt(firstNumbers, result[0]);
   return result;
 }
 
