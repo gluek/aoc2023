@@ -17,6 +17,8 @@ def parse_line(line: str):
     question_marks = line.count('?')
     possibilities = list(product('#.', repeat=question_marks))
     for case in possibilities:
+        if case.count("#") + springs.count("#") != sum(map(int, numbers.split(","))):
+            continue
         tmp_springs = springs
         for symbol in case:
             tmp_springs = tmp_springs.replace("?", symbol, 1)
