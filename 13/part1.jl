@@ -1,7 +1,7 @@
 module day13
 
 function validate(puzzle, x)
-    k = 0
+    k = 1
     while x - k > 0 && x + 1 + k <= length(puzzle)
         if puzzle[x-k] != puzzle[x+1+k]
             return false
@@ -51,6 +51,9 @@ function print_puzzle(puzzle)
     end
 end
 
+# store old symmetry lines
+# check for almost equal
+# validate
 function solve(puzzles)
     result = 0
     for (i, puzzle) in enumerate(puzzles)
