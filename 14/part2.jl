@@ -65,7 +65,7 @@ function evaluate_load(puzzle)
 end
 
 
-file = open("puzzle.txt", "r")
+file = open("input.txt", "r")
 input = readlines(file)
 close(file)
 puzzles = []
